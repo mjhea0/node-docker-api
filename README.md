@@ -1,5 +1,7 @@
 # Node Docker API
 
+[![Build Status](https://travis-ci.org/mjhea0/node-docker-api.svg?branch=master)](https://travis-ci.org/mjhea0/node-docker-api)
+
 Node + Express API + Docker
 
 ### Setup
