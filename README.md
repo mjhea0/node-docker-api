@@ -65,5 +65,5 @@ $ docker-compose run web knex seed:run --env development --knexfile app/knexfile
 With the app running, open a new terminal tab and run:
 
 ```sh
-$ docker-compose run web mocha app/test
+$ docker-compose run web npm test
 ```
