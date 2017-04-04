@@ -3,7 +3,9 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
-const jobs = require('./routes/jobs');
+require('dotenv').config();
+
+const routes = require('./routes/users');
 
 const app = express();
 
@@ -14,14 +16,12 @@ app.use((req, res, next) => {
   next();
 });
 
-if (process.env.NODE_ENV !== 'test') {
-  app.use(logger('dev'));
-}
+if (process.env.NODE_ENV !== 'test') { app.use(logger('dev')); }
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', jobs);
+app.use('/users', routes);
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');
@@ -35,7 +35,7 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.json({
     status: 'error',
-    message,
+    message: err
   });
 });
 /* eslint-enable no-unused-vars */

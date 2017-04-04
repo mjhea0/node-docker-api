@@ -2,30 +2,32 @@ version: '2.1'
 
 services:
 
-  postgres:
-    build: ./app/src/db
+  users-db:
+    container_name: "users-db"
+    build:
+      context: ./services/users/src/db
+      dockerfile: ./Dockerfile-users-db
     healthcheck:
       test: exit 0
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_DB=jobs
+      - POSTGRES_DB=node_users_dev
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
 
-  web:
-    build: ./app
+  users-service:
+    container_name: 'users-service'
+    build:
+      context: ./services/users/.
+      dockerfile: ./Dockerfile-users
     volumes:
-      - "./app:/src/app"
+      - "./services/users:/src/app"
+      - "./services/users/package.json:/src/package.json"
     ports:
-      - "3000:3000"
-      - "35729:35729"
-    environment:
-      - DATABASE_URL=postgres://admin:admin@postgres:5432/jobs_dev
-      - DATABASE_URL_TEST=postgres://admin:admin@postgres:5432/jobs_test
-      - NODE_ENV=dev
+      - "3003:3003"
     depends_on:
-      postgres:
+      users-db:
         condition: service_healthy
     links:
-     - postgres
+      - users-db

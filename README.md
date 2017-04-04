@@ -28,18 +28,24 @@ $ docker-compose build
 Run the containers:
 
 ```sh
-$ docker-compose up
+$ docker-compose up -d
 ```
 
 Your app should be listening on running on port 3000 with the following routes:
 
-| Endpoint | HTTP Method  | CRUD Method | Result               |
-|----------|--------------|-------------|----------------------|
-| /        | GET          | CREATE      | get all jobs         |
-| /:id     | GET          | CREATE      | get a single job     |
-| /        | POST         | READ        | add a single job     |
-| /:id     | PUT          | UPDATE      | update a single job  |
-| /:id     | DELETE       | DELETE      | delete a single job  |
+| Endpoint         | HTTP Method  | CRUD Method | Result               |
+|------------------|--------------|-------------|----------------------|
+| /api/v1/jobs/    | GET          | CREATE      | get all jobs         |
+| /api/v1/jobs/:id | GET          | CREATE      | get a single job     |
+| /api/v1/jobs/    | POST         | READ        | add a single job     |
+| /api/v1/jobs/:id | PUT          | UPDATE      | update a single job  |
+| /api/v1/jobs/:id | DELETE       | DELETE      | delete a single job  |
+
+To stop the containers:
+
+```sh
+$ docker-compose stop
+```
 
 To bring down the containers:
 
@@ -53,19 +59,25 @@ Want to force a build?
 $ docker-compose build --no-cache
 ```
 
-### Migrate and Seed
-
-With the app running, open a new terminal tab and run:
+Remove images:
 
 ```sh
-$ docker-compose run web knex migrate:latest --env development --knexfile app/knexfile.js
-$ docker-compose run web knex seed:run --env development --knexfile app/knexfile.js
+$ docker rmi $(docker images -q)
+```
+
+### Migrate and Seed
+
+With the app running, run:
+
+```sh
+$ docker-compose run server knex migrate:latest --env development --knexfile app/knexfile.js
+$ docker-compose run server knex seed:run --env development --knexfile app/knexfile.js
 ```
 
 ### Test
 
-With the app running, open a new terminal tab and run:
+With the app running, run:
 
 ```sh
-$ docker-compose run web npm test
+$ docker-compose run server npm test
 ```
