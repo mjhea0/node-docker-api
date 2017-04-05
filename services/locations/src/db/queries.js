@@ -1,29 +1,29 @@
 const knex = require('./connection');
 
-function getAllJobs() {
-  return knex('jobs').select();
+function getAllLocations() {
+  return knex('locations').select();
 }
 
-function getSingleJob(jobId) {
-  return knex('jobs').select().where('id', jobId);
+function getSingleLocation(locationId) {
+  return knex('locations').select().where('id', locationId);
 }
 
-function addJob(obj) {
-  return knex('jobs').insert(obj);
+function addLocation(obj) {
+  return knex('locations').insert(obj);
 }
 
-function updateJob(jobId, obj) {
-  return knex('jobs').update(obj).where('id', jobId);
+function updateLocation(locationId, obj) {
+  return knex('locations').update(obj).where('id', locationId);
 }
 
-function removeJob(jobId) {
-  return knex('jobs').del().where('id', jobId);
+function removeLocation(locationId) {
+  return knex('locations').del().where('id', locationId);
 }
 
 module.exports = {
-  getAllJobs,
-  getSingleJob,
-  addJob,
-  updateJob,
-  removeJob,
+  getAllLocations,
+  getSingleLocation,
+  addLocation,
+  updateLocation,
+  removeLocation,
 };
