@@ -1,2 +1,2 @@
-CREATE DATABASE jobs_dev;
-CREATE DATABASE jobs_test;
+CREATE DATABASE node_users_dev;
+CREATE DATABASE node_users_test;
