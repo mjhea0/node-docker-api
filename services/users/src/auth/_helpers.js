@@ -8,23 +8,24 @@ function createUser(req) {
   return knex('users')
   .insert({
     username: req.body.username,
-    password: hash
+    password: hash,
   })
   .returning('*');
 }
 
 function getUser(username) {
-  return knex('users').where({username}).first();
+  return knex('users').where({ username }).first();
 }
 
 function comparePass(userPassword, databasePassword) {
   return bcrypt.compareSync(userPassword, databasePassword);
 }
 
+/* eslint-disable consistent-return */
 function ensureAuthenticated(req, res, next) {
   if (!(req.headers && req.headers.authorization)) {
     return res.status(400).json({
-      status: 'Please log in'
+      status: 'Please log in',
     });
   }
   // decode the token
@@ -33,25 +34,25 @@ function ensureAuthenticated(req, res, next) {
   localAuth.decodeToken(token, (err, payload) => {
     if (err) {
       return res.status(401).json({
-        status: 'Token has expired'
-      });
-    } else {
-      return knex('users').where({id: parseInt(payload.sub)}).first()
-      .then((user) => {
-        next();
-      })
-      .catch((err) => {
-        res.status(500).json({
-          status: 'error'
-        });
+        status: 'Token has expired',
       });
     }
+    return knex('users').where({ id: parseInt(payload.sub, 10) }).first()
+    .then(() => {
+      return next();
+    })
+    .catch(() => {
+      return res.status(500).json({
+        status: 'error',
+      });
+    });
   });
 }
+/* eslint-enable consistent-return */
 
 module.exports = {
   createUser,
   getUser,
   comparePass,
-  ensureAuthenticated
+  ensureAuthenticated,
 };

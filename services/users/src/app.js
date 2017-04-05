@@ -35,7 +35,7 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.json({
     status: 'error',
-    message: err
+    message: err,
   });
 });
 /* eslint-enable no-unused-vars */
