@@ -4,11 +4,10 @@ const authHelpers = require('../auth/_helpers');
 
 const router = express.Router();
 
-
 /*
 get all locations
  */
-router.get('/', authHelpers.ensureAuthenticated, (req, res, next) => {
+router.get('/', (req, res, next) => {
   return queries.getAllLocations()
   .then((locations) => {
     res.json({
@@ -22,7 +21,7 @@ router.get('/', authHelpers.ensureAuthenticated, (req, res, next) => {
 /*
 get single location
  */
-router.get('/:id', authHelpers.ensureAuthenticated, (req, res, next) => {
+router.get('/:id', (req, res, next) => {
   return queries.getSingleLocation(parseInt(req.params.id, 10))
   .then((locations) => {
     res.json({
@@ -37,7 +36,7 @@ router.get('/:id', authHelpers.ensureAuthenticated, (req, res, next) => {
 /*
 add new location
  */
-router.post('/', authHelpers.ensureAuthenticated, (req, res, next) => {
+router.post('/', (req, res, next) => {
   return queries.addLocation(req.body)
   .then(() => {
     res.json({
@@ -52,7 +51,7 @@ router.post('/', authHelpers.ensureAuthenticated, (req, res, next) => {
 /*
 update location
  */
-router.put('/:id', authHelpers.ensureAuthenticated, (req, res, next) => {
+router.put('/:id', (req, res, next) => {
   return queries.updateLocation(parseInt(req.params.id, 10), req.body)
   .then(() => {
     res.json({
@@ -66,7 +65,7 @@ router.put('/:id', authHelpers.ensureAuthenticated, (req, res, next) => {
 /*
 delete location
  */
-router.delete('/:id', authHelpers.ensureAuthenticated, (req, res, next) => {
+router.delete('/:id', (req, res, next) => {
   return queries.removeLocation(parseInt(req.params.id, 10))
   .then(() => {
     res.json({

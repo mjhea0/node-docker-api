@@ -29,13 +29,11 @@ describe('Locations API Routes', () => {
         res.type.should.equal('application/json');
         res.body.status.should.equal('success');
         res.body.data.should.be.a('array');
-        res.body.data.length.should.equal(3);
-        res.body.data[0].should.have.property('id');
-        res.body.data[0].should.have.property('title');
-        res.body.data[0].should.have.property('description');
-        res.body.data[0].should.have.property('company');
-        res.body.data[0].should.have.property('email');
-        res.body.data[0].should.have.property('contacted');
+        res.body.data.length.should.equal(1);
+        res.body.data[0].should.have.property('user_id');
+        res.body.data[0].should.have.property('lat');
+        res.body.data[0].should.have.property('long');
+        res.body.data[0].should.have.property('created_at');
         done();
       });
     });
@@ -54,16 +52,13 @@ describe('Locations API Routes', () => {
           res.body.data.should.be.a('object');
           res.body.data.should.have.property('id');
           res.body.data.id.should.equal(location.id);
-          res.body.data.should.have.property('title');
-          res.body.data.title.should.equal(location.title);
-          res.body.data.should.have.property('description');
-          res.body.data.description.should.equal(location.description);
-          res.body.data.should.have.property('company');
-          res.body.data.company.should.equal(location.company);
-          res.body.data.should.have.property('email');
-          res.body.data.email.should.equal(location.email);
-          res.body.data.should.have.property('contacted');
-          res.body.data.contacted.should.equal(location.contacted);
+          res.body.data.should.have.property('user_id');
+          res.body.data.user_id.should.equal(location.user_id);
+          res.body.data.should.have.property('lat');
+          res.body.data.lat.should.equal(location.lat);
+          res.body.data.should.have.property('long');
+          res.body.data.long.should.equal(location.long);
+          res.body.data.should.have.property('created_at');
         });
       });
     });
@@ -75,10 +70,9 @@ describe('Locations API Routes', () => {
         chai.request(server)
         .post('/locations')
         .send({
-          title: 'Senior Solutions Architect',
-          description: 'Design solutions all day long',
-          company: 'NodeGorge',
-          email: 'manager@nodegorge.com',
+          user_id: 99,
+          lat: 46.9,
+          long: -47.8,
         })
         .end((err, res) => {
           res.should.have.status(200);
@@ -89,22 +83,19 @@ describe('Locations API Routes', () => {
           return queries.getAllLocations()
           .then((locationsAfter) => {
             locationsAfter.length.should.equal(locationsBefore.length + 1);
-            locationsAfter[locationsAfter.length - 1].title.should.equal(
-              'Senior Solutions Architect');
+            locationsAfter[locationsAfter.length - 1].user_id.should.equal(99);
           });
         });
       });
     });
-    it('should NOT create a location missing a title', () => {
+    it('should NOT create a location missing a user_id', () => {
       return queries.getAllLocations()
       .then((locationsBefore) => {
         chai.request(server)
         .post('/locations')
         .send({
-          description: 'Design solutions all day long',
-          company: 'NodeGorge',
-          email: 'manager@nodegorge.com',
-          contacted: false,
+          lat: 77,
+          long: 77,
         })
         .end((err, res) => {
           res.should.have.status(500);
@@ -113,8 +104,7 @@ describe('Locations API Routes', () => {
           return queries.getAllLocations()
           .then((locationsAfter) => {
             locationsAfter.length.should.equal(locationsBefore.length);
-            locationsAfter[locationsAfter.length - 1].description.should.not.equal(
-              'Design solutions all day long');
+            locationsAfter[locationsAfter.length - 1].lat.should.not.equal(77);
           });
         });
       });
@@ -128,11 +118,9 @@ describe('Locations API Routes', () => {
         chai.request(server)
         .put(`/locations/${locationID}`)
         .send({
-          title: 'subservient architect',
-          description: 'follow the lead architect',
-          company: 'Microsoft',
-          email: 'manager@example.com',
-          contacted: false,
+          user_id: 77,
+          lat: 77,
+          long: 77,
         })
         .end((err, res) => {
           res.should.have.status(200);
@@ -142,11 +130,9 @@ describe('Locations API Routes', () => {
           res.body.data.should.equal('Location Updated!');
           return queries.getSingleLocation(locationID)
           .then((locations) => {
-            locations[0].title.should.equal('subservient architect');
-            locations[0].description.should.equal('follow the lead architect');
-            locations[0].company.should.equal('Microsoft');
-            locations[0].email.should.equal('manager@example.com');
-            locations[0].contacted.should.equal(false);
+            locations[0].user_id.should.equal(77);
+            locations[0].lat.should.equal(77);
+            locations[0].long.should.equal(77);
           });
         });
       });
