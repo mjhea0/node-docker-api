@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 
 require('dotenv').config();
 
-const routes = require('./routes/users');
+const routes = require('./routes/locations');
 
 const app = express();
 
@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/users', routes);
+app.use('/locations', routes);
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');

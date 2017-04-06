@@ -5,8 +5,8 @@ exports.seed = (knex, Promise) => {
       knex('locations').insert({
         user_id: 1,
         lat: 40.014986,
-        long: -105.270546
-      })
+        long: -105.270546,
+      })  // eslint-disable-line
     );
   });
 };

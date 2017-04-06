@@ -5,20 +5,23 @@ module.exports = {
     client: 'pg',
     connection: process.env.DATABASE_URL,
     migrations: {
-      directory: path.join(__dirname, 'db', 'migrations')
+      directory: path.join(__dirname, 'src', 'model', 'migrations')
     },
     seeds: {
-      directory: path.join(__dirname, 'db', 'seeds')
+      directory: path.join(__dirname, 'src',
+      'model', 'seeds')
     }
   },
   test: {
     client: 'pg',
     connection: process.env.DATABASE_URL_TEST,
     migrations: {
-      directory: path.join(__dirname, 'db', 'migrations')
+      directory: path.join(__dirname, 'src',
+      'model', 'migrations')
     },
     seeds: {
-      directory: path.join(__dirname, 'db', 'seeds')
+      directory: path.join(__dirname, 'src',
+      'model', 'seeds')
     }
   }
 };

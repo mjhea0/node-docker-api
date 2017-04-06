@@ -1,24 +1,13 @@
-const bcrypt = require('bcryptjs');
-const knex = require('../db/connection');
-const localAuth = require('./local');
+const moment = require('moment');
+const jwt = require('jwt-simple');
+const knex = require('../model/connection');
 
-function createUser(req) {
-  const salt = bcrypt.genSaltSync();
-  const hash = bcrypt.hashSync(req.body.password, salt);
-  return knex('users')
-  .insert({
-    username: req.body.username,
-    password: hash,
-  })
-  .returning('*');
-}
-
-function getUser(username) {
-  return knex('users').where({ username }).first();
-}
-
-function comparePass(userPassword, databasePassword) {
-  return bcrypt.compareSync(userPassword, databasePassword);
+function decodeToken(token, callback) {
+  const payload = jwt.decode(token, process.env.TOKEN_SECRET);
+  const now = moment().unix();
+  // check if the token has expired
+  if (now > payload.exp) callback('Token has expired.');
+  else callback(null, payload);
 }
 
 /* eslint-disable consistent-return */
@@ -31,7 +20,7 @@ function ensureAuthenticated(req, res, next) {
   // decode the token
   const header = req.headers.authorization.split(' ');
   const token = header[1];
-  localAuth.decodeToken(token, (err, payload) => {
+  decodeToken(token, (err, payload) => {
     if (err) {
       return res.status(401).json({
         status: 'Token has expired',
@@ -51,8 +40,5 @@ function ensureAuthenticated(req, res, next) {
 /* eslint-enable consistent-return */
 
 module.exports = {
-  createUser,
-  getUser,
-  comparePass,
   ensureAuthenticated,
 };
