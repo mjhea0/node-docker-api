@@ -1,7 +1,7 @@
 exports.up = (knex) => {
   return knex.schema.createTable('locations', (table) => {
     table.increments();
-    table.integer('user_id').notNullable(); // foreign key?? :(
+    table.foreign('user_id').references('id').inTable('users');
     table.float('lat').notNullable();
     table.float('long').notNullable();
     table.timestamp('created_at').notNullable().defaultTo(knex.raw('now()'));
