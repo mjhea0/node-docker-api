@@ -53,3 +53,25 @@ services:
     links:
       - postgres
       - users-service
+
+  web:
+    container_name: web
+    build: ./web/
+    volumes:
+      - './web:/src/app'
+      - './web/package.json:/src/package.json'
+    ports:
+      - '3003:3003'
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      users-service:
+        condition: service_started
+      locations-service:
+        condition: service_started
+    links:
+      - postgres
+      - users-service
+      - locations-service

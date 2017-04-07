@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "gulp --gulpfile gulpfile.js"
+    "start": "gulp --gulpfile app/gulpfile.js"
   },
   "dependencies": {
     "body-parser": "~1.15.2",
