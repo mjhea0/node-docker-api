@@ -26,4 +26,16 @@ router.get('/', ensureAuthenticated, (req, res) => {
   res.render('main.html');
 });
 
+router.get('/login', (req, res) => {
+  res.send('hi');
+});
+
+router.get('/register', (req, res) => {
+  res.send('hi');
+});
+
+router.get('/user', ensureAuthenticated, (req, res) => {
+  res.send('hi');
+});
+
 module.exports = router;
