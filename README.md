@@ -70,8 +70,8 @@ $ docker rmi $(docker images -q)
 With the app running, run:
 
 ```sh
-$ docker-compose run server knex migrate:latest --env development --knexfile app/knexfile.js
-$ docker-compose run server knex seed:run --env development --knexfile app/knexfile.js
+$ docker-compose run users-service knex migrate:latest --env development --knexfile app/knexfile.js
+$ docker-compose run users-service knex seed:run --env development --knexfile app/knexfile.js
 ```
 
 ### Test

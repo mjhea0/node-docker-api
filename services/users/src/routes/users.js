@@ -25,7 +25,9 @@ router.post('/login', (req, res) => {
   const password = req.body.password;
   return authHelpers.getUser(username)
   .then((response) => {
-    authHelpers.comparePass(password, response.password);
+    if (!authHelpers.comparePass(password, response.password)) {
+      throw new Error('Incorrect password');
+    }
     return response;
   })
   .then((response) => { return localAuth.encodeToken(response); })
@@ -35,9 +37,10 @@ router.post('/login', (req, res) => {
       token,
     });
   })
-  .catch(() => {
+  .catch((err) => {
     res.status(500).json({
       status: 'error',
+      message: err
     });
   });
 });

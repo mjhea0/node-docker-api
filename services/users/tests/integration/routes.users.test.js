@@ -74,6 +74,21 @@ describe('routes : users', () => {
         done();
       });
     });
+    it('should not login a valid user with incorrect password', (done) => {
+      chai.request(server)
+      .post('/users/login')
+      .send({
+        username: 'jeremy',
+        password: 'incorrect'
+      })
+      .end((err, res) => {
+        should.exist(err);
+        res.status.should.eql(500);
+        res.type.should.eql('application/json');
+        res.body.status.should.eql('error');
+        done();
+      });
+    });
   });
 
   describe('GET /users/user', () => {

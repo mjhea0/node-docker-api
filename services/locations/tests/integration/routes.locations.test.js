@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'test';
 
+const request = require('request-promise');
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
@@ -22,18 +23,22 @@ describe('Locations API Routes', () => {
   });
 
   describe('GET /locations', () => {
-    it('should return all locations', (done) => {
-      chai.request(server)
-      .post('/users/login')
-      .send({
+    it('should return all locations', () => {
+      const payload = {
         username: 'jeremy',
         password: 'johnson123'
-      })
-      .end((error, response) => {
-        should.not.exist(error);
+      };
+      const options = {
+        method: 'POST',
+        uri: 'http://users-service:3000/users/login',
+        body: payload,
+        json: true
+      };
+      return request(options)
+      .then((response) => {
         chai.request(server)
         .get('/locations')
-        .set('authorization', `Bearer ${response.body.token}`)
+        .set('authorization', `Bearer ${response.token}`)
         .end((err, res) => {
           res.type.should.equal('application/json');
           res.body.status.should.equal('success');
@@ -43,7 +48,6 @@ describe('Locations API Routes', () => {
           res.body.data[0].should.have.property('lat');
           res.body.data[0].should.have.property('long');
           res.body.data[0].should.have.property('created_at');
-          done();
         });
       });
     });
@@ -60,21 +64,25 @@ describe('Locations API Routes', () => {
     });
   });
   describe('GET /locations/:id', () => {
-    it('should return a single location', (done) => {
-      chai.request(server)
-      .post('/users/login')
-      .send({
+    it('should return a single location', () => {
+      const payload = {
         username: 'jeremy',
         password: 'johnson123'
-      })
-      .end((error, response) => {
-        should.not.exist(error);
+      };
+      const options = {
+        method: 'POST',
+        uri: 'http://users-service:3000/users/login',
+        body: payload,
+        json: true
+      };
+      return request(options)
+      .then((response) => {
         return queries.getAllLocations()
         .then((locations) => {
           const location = locations[0];
           chai.request(server)
           .get(`/locations/${location.id}`)
-          .set('authorization', `Bearer ${response.body.token}`)
+          .set('authorization', `Bearer ${response.token}`)
           .end((err, res) => {
             res.should.have.status(200);
             res.type.should.equal('application/json');
@@ -109,22 +117,25 @@ describe('Locations API Routes', () => {
     });
   });
   describe('POST /', () => {
-    it('should create a new location', (done) => {
-      chai.request(server)
-      .post('/users/login')
-      .send({
+    it('should create a new location', () => {
+      const payload = {
         username: 'jeremy',
         password: 'johnson123'
-      })
-      .end((error, response) => {
-        should.not.exist(error);
+      };
+      const options = {
+        method: 'POST',
+        uri: 'http://users-service:3000/users/login',
+        body: payload,
+        json: true
+      };
+      return request(options)
+      .then((response) => {
         return queries.getAllLocations()
         .then((locationsBefore) => {
           chai.request(server)
           .post('/locations')
-          .set('authorization', `Bearer ${response.body.token}`)
+          .set('authorization', `Bearer ${response.token}`)
           .send({
-            user_id: 99,
             lat: 46.9,
             long: -47.8,
           })
@@ -137,28 +148,31 @@ describe('Locations API Routes', () => {
             return queries.getAllLocations()
             .then((locationsAfter) => {
               locationsAfter.length.should.equal(locationsBefore.length + 1);
-              locationsAfter[locationsAfter.length - 1].user_id.should.equal(99);
+              locationsAfter[locationsAfter.length - 1].user_id.should.equal(1);
             });
           });
         });
       });
     });
-    it('should NOT create a location missing a user_id', (done) => {
-      chai.request(server)
-      .post('/users/login')
-      .send({
+    it('should NOT create a location missing a lat', () => {
+      const payload = {
         username: 'jeremy',
         password: 'johnson123'
-      })
-      .end((error, response) => {
-        should.not.exist(error);
+      };
+      const options = {
+        method: 'POST',
+        uri: 'http://users-service:3000/users/login',
+        body: payload,
+        json: true
+      };
+      return request(options)
+      .then((response) => {
         return queries.getAllLocations()
         .then((locationsBefore) => {
           chai.request(server)
           .post('/locations')
-          .set('authorization', `Bearer ${response.body.token}`)
+          .set('authorization', `Bearer ${response.token}`)
           .send({
-            lat: 77,
             long: 77,
           })
           .end((err, res) => {
@@ -180,7 +194,6 @@ describe('Locations API Routes', () => {
         chai.request(server)
         .post('/locations')
         .send({
-          user_id: 99,
           lat: 46.9,
           long: -47.8,
         })
@@ -194,23 +207,26 @@ describe('Locations API Routes', () => {
     });
   });
   describe('PUT /:id', () => {
-    it('should update a location', (done) => {
-      chai.request(server)
-      .post('/users/login')
-      .send({
+    it('should update a location', () => {
+      const payload = {
         username: 'jeremy',
         password: 'johnson123'
-      })
-      .end((error, response) => {
-        should.not.exist(error);
+      };
+      const options = {
+        method: 'POST',
+        uri: 'http://users-service:3000/users/login',
+        body: payload,
+        json: true
+      };
+      return request(options)
+      .then((response) => {
         return queries.getAllLocations()
         .then((locationsBefore) => {
           const locationID = locationsBefore[0].id;
           chai.request(server)
           .put(`/locations/${locationID}`)
-          .set('authorization', `Bearer ${response.body.token}`)
+          .set('authorization', `Bearer ${response.token}`)
           .send({
-            user_id: 77,
             lat: 77,
             long: 77,
           })
@@ -222,7 +238,7 @@ describe('Locations API Routes', () => {
             res.body.data.should.equal('Location Updated!');
             return queries.getSingleLocation(locationID)
             .then((locations) => {
-              locations[0].user_id.should.equal(77);
+              locations[0].user_id.should.equal(1);
               locations[0].lat.should.equal(77);
               locations[0].long.should.equal(77);
             });
@@ -237,7 +253,6 @@ describe('Locations API Routes', () => {
         chai.request(server)
         .put(`/locations/${locationID}`)
         .send({
-          user_id: 77,
           lat: 77,
           long: 77,
         })
@@ -251,21 +266,25 @@ describe('Locations API Routes', () => {
     });
   });
   describe('DELETE /:id', () => {
-    it('should delete a location', (done) => {
-      chai.request(server)
-      .post('/users/login')
-      .send({
+    it('should delete a location', () => {
+      const payload = {
         username: 'jeremy',
         password: 'johnson123'
-      })
-      .end((error, response) => {
-        should.not.exist(error);
+      };
+      const options = {
+        method: 'POST',
+        uri: 'http://users-service:3000/users/login',
+        body: payload,
+        json: true
+      };
+      return request(options)
+      .then((response) => {
         return queries.getAllLocations()
         .then((locationsBefore) => {
           const locationID = locationsBefore[0].id;
           chai.request(server)
           .delete(`/locations/${locationID}`)
-          .set('authorization', `Bearer ${response.body.token}`)
+          .set('authorization', `Bearer ${response.token}`)
           .end((err, res) => {
             res.should.have.status(200);
             res.type.should.equal('application/json');

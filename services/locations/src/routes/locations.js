@@ -37,6 +37,7 @@ router.get('/:id', authHelpers.ensureAuthenticated, (req, res, next) => {
 add new location
  */
 router.post('/', authHelpers.ensureAuthenticated, (req, res, next) => {
+  req.body.user_id = req.user.id;
   return queries.addLocation(req.body)
   .then(() => {
     res.json({
@@ -52,6 +53,7 @@ router.post('/', authHelpers.ensureAuthenticated, (req, res, next) => {
 update location
  */
 router.put('/:id', authHelpers.ensureAuthenticated, (req, res, next) => {
+  req.body.user_id = req.user.id;
   return queries.updateLocation(parseInt(req.params.id, 10), req.body)
   .then(() => {
     res.json({

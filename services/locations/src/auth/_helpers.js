@@ -27,7 +27,8 @@ function ensureAuthenticated(req, res, next) {
       });
     }
     return knex('users').where({ id: parseInt(payload.sub, 10) }).first()
-    .then(() => {
+    .then((user) => {
+      req.user = user;
       return next();
     })
     .catch(() => {

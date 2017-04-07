@@ -2,32 +2,54 @@ version: '2.1'
 
 services:
 
-  users-db:
-    container_name: "users-db"
-    build:
-      context: ./services/users/src/db
-      dockerfile: ./Dockerfile-users-db
+  postgres:
+    container_name: postgres
+    build: ./services/db
     healthcheck:
       test: exit 0
     ports:
-      - "5433:5432"
+      - '5433:5432'
     environment:
-      - POSTGRES_DB=node_users_dev
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
 
   users-service:
-    container_name: 'users-service'
-    build:
-      context: ./services/users/.
-      dockerfile: ./Dockerfile-users
+    container_name: users-service
+    build: ./services/users/
     volumes:
-      - "./services/users:/src/app"
-      - "./services/users/package.json:/src/package.json"
+      - './services/users:/src/app'
+      - './services/users/package.json:/src/package.json'
     ports:
-      - "3003:3003"
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgres://admin:admin@postgres:5432/node_docker_api_dev
+      - DATABASE_URL_TEST=postgres://admin:admin@postgres:5432/node_docker_api_test
+      - NODE_ENV=development
+      - TOKEN_SECRET=changeme
     depends_on:
-      users-db:
+      postgres:
         condition: service_healthy
     links:
-      - users-db
+      - postgres
+
+  locations-service:
+    container_name: locations-service
+    build: ./services/locations/
+    volumes:
+      - './services/locations:/src/app'
+      - './services/locations/package.json:/src/package.json'
+    ports:
+      - '3001:3001'
+    environment:
+      - DATABASE_URL=postgres://admin:admin@postgres:5432/node_docker_api_dev
+      - DATABASE_URL_TEST=postgres://admin:admin@postgres:5432/node_docker_api_test
+      - NODE_ENV=development
+      - TOKEN_SECRET=changeme
+    depends_on:
+      postgres:
+        condition: service_healthy
+      users-service:
+        condition: service_started
+    links:
+      - postgres
+      - users-service
