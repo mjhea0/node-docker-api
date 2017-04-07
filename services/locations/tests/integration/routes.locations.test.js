@@ -19,10 +19,10 @@ describe('Locations API Routes', () => {
   });
 
   afterEach(() => {
-    return knex.migrate.rollback();
+    // return knex.migrate.rollback();
   });
 
-  describe('GET /locations', () => {
+  describe.only('GET /locations', () => {
     it('should return all locations', () => {
       const payload = {
         username: 'jeremy',
