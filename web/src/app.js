@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const nunjucks = require('nunjucks');
 const path = require('path');
+const session = require('express-session');
 
 // require('dotenv').config();
 
@@ -28,6 +29,11 @@ if (process.env.NODE_ENV !== 'test') { app.use(logger('dev')); }
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({
+  secret: process.env.SECRET_KEY,
+  resave: false,
+  saveUninitialized: true,
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);

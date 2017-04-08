@@ -64,6 +64,7 @@ services:
       - '3003:3003'
     environment:
       - NODE_ENV=test
+      - SECRET_KEY=changeme
     depends_on:
       postgres:
         condition: service_healthy
