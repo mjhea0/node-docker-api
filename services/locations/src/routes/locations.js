@@ -1,22 +1,53 @@
 const express = require('express');
+const request = require('request-promise');
 const queries = require('../model/queries.js');
 const authHelpers = require('../auth/_helpers');
 
+const BASE = 'http://api.openweathermap.org/data/2.5/weather';
+const KEY = process.env.OPENWEATHERMAP_API_KEY;
+
 const router = express.Router();
+
+function getWeather(locationsArray) {
+  const data = locationsArray.map((location) => {
+    const options = {
+      method: 'GET',
+      uri: `${BASE}?lat=${location.lat}&lon=${location.long}&appid=${KEY}`,
+      json: true,
+    };
+    return request(options);
+  });
+  return Promise.all(data);
+}
 
 /*
 get all locations
  */
+/* eslint-disable no-param-reassign */
 router.get('/', authHelpers.ensureAuthenticated, (req, res, next) => {
+  let allLocations = [];
   return queries.getAllLocations()
   .then((locations) => {
+    allLocations = locations;
+    return getWeather(locations);
+  })
+  .then((weather) => {
+    const final = allLocations.map((location) => {
+      weather.forEach((el) => {
+        const convert = (parseFloat(el.main.temp, 10) * (9 / 5)) - 459.67;
+        location.temp = Math.round(convert);
+      });
+      return location;
+    });
     res.json({
       status: 'success',
-      data: locations,
+      data: final,
     });
   })
   .catch((err) => { return next(err); });
 });
+/* eslint-enable no-param-reassign */
+
 
 /*
 get single location
@@ -77,6 +108,5 @@ router.delete('/:id', authHelpers.ensureAuthenticated, (req, res, next) => {
   })
   .catch((err) => { return next(err); });
 });
-
 
 module.exports = router;

@@ -46,12 +46,14 @@ app.use((req, res, next) => {
 
 /* eslint-disable no-unused-vars */
 app.use((err, req, res, next) => {
-  const message = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500);
-  res.json({
-    status: 'error',
-    message: err,
-  });
+  if (!err) return next();
+  const status = err.status || 500;
+  const message = {
+    status,
+    code: err.code,
+    detail: err.message || err.err.message,
+  };
+  return res.status(status).render('error', message);
 });
 /* eslint-enable no-unused-vars */
 

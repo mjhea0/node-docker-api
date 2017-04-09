@@ -19,7 +19,7 @@ describe('Locations API Routes', () => {
   });
 
   afterEach(() => {
-    // return knex.migrate.rollback();
+    return knex.migrate.rollback();
   });
 
   describe.only('GET /locations', () => {

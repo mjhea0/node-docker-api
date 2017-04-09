@@ -4,6 +4,29 @@
 
 {% block content %}
 
-<h1>hello, world</h1>
+<h1>All Data</h1>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>User ID</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>Temp</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for location in locations %}
+    <tr>
+      <td>{{location.id}}</td>
+      <td>{{location.user_id}}</td>
+      <td>{{location.lat}}</td>
+      <td>{{location.long}}</td>
+      <td>{{location.temp}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 {% endblock %}
