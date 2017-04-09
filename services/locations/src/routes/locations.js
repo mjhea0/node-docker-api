@@ -1,24 +1,9 @@
 const express = require('express');
-const request = require('request-promise');
 const queries = require('../model/queries.js');
 const authHelpers = require('../auth/_helpers');
-
-const BASE = 'http://api.openweathermap.org/data/2.5/weather';
-const KEY = process.env.OPENWEATHERMAP_API_KEY;
+const routeHelpers = require('./_helpers');
 
 const router = express.Router();
-
-function getWeather(locationsArray) {
-  const data = locationsArray.map((location) => {
-    const options = {
-      method: 'GET',
-      uri: `${BASE}?lat=${location.lat}&lon=${location.long}&appid=${KEY}`,
-      json: true,
-    };
-    return request(options);
-  });
-  return Promise.all(data);
-}
 
 /*
 get all locations
@@ -29,7 +14,7 @@ router.get('/', authHelpers.ensureAuthenticated, (req, res, next) => {
   return queries.getAllLocations()
   .then((locations) => {
     allLocations = locations;
-    return getWeather(locations);
+    return routeHelpers.getWeather(locations);
   })
   .then((weather) => {
     const final = allLocations.map((location) => {

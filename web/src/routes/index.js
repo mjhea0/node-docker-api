@@ -86,6 +86,28 @@ router.get('/logout', helpers.ensureAuthenticated, (req, res) => {
   res.redirect('/');
 });
 
+router.post('/add', helpers.ensureAuthenticated, (req, res, next) => {
+  const payload = {
+    lat: req.body.latitude,
+    long: req.body.longitude,
+  };
+  const options = {
+    method: 'POST',
+    uri: 'http://locations-service:3001/locations/',
+    json: true,
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${req.session.token}`,
+    },
+  };
+  return request(options)
+  .then((response) => {
+    res.redirect('/');
+  })
+  .catch((err) => { next(err); });
+});
+
 router.get('/user', helpers.ensureAuthenticated, (req, res) => {
   let user = false;
   if (req.session.token) { user = true; }
