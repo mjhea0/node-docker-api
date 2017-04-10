@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "test": "./node_modules/mocha/bin/_mocha 'app/*.test.js'"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "cheerio": "^0.22.0",
+    "mocha": "^3.2.0",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.0"
+  }
+}
