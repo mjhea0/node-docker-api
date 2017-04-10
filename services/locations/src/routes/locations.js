@@ -14,14 +14,12 @@ router.get('/', authHelpers.ensureAuthenticated, (req, res, next) => {
   return queries.getAllLocations()
   .then((locations) => {
     allLocations = locations;
-    return routeHelpers.getWeather(locations);
+    return routeHelpers.getWeather(allLocations);
   })
   .then((weather) => {
-    const final = allLocations.map((location) => {
-      weather.forEach((el) => {
-        const convert = (parseFloat(el.main.temp, 10) * (9 / 5)) - 459.67;
-        location.temp = Math.round(convert);
-      });
+    const final = allLocations.map((location, i) => {
+      const convert = (parseFloat(weather[i].main.temp, 10) * (9 / 5)) - 459.67;
+      location.temp = Math.round(convert);
       return location;
     });
     res.json({
@@ -33,6 +31,31 @@ router.get('/', authHelpers.ensureAuthenticated, (req, res, next) => {
 });
 /* eslint-enable no-param-reassign */
 
+/*
+get locations by user
+ */
+/* eslint-disable no-param-reassign */
+router.get('/user', authHelpers.ensureAuthenticated, (req, res, next) => {
+  let allLocations = [];
+  return queries.getAllLocationsByUser(parseInt(req.user.id, 10))
+  .then((locations) => {
+    allLocations = locations;
+    return routeHelpers.getWeather(allLocations);
+  })
+  .then((weather) => {
+    const final = allLocations.map((location, i) => {
+      const convert = (parseFloat(weather[i].main.temp, 10) * (9 / 5)) - 459.67;
+      location.temp = Math.round(convert);
+      return location;
+    });
+    res.json({
+      status: 'success',
+      data: final,
+    });
+  })
+  .catch((err) => { return next(err); });
+});
+/* eslint-enable no-param-reassign */
 
 /*
 get single location

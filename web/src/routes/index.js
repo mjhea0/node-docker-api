@@ -108,10 +108,23 @@ router.post('/add', helpers.ensureAuthenticated, (req, res, next) => {
   .catch((err) => { next(err); });
 });
 
-router.get('/user', helpers.ensureAuthenticated, (req, res) => {
+router.get('/user', helpers.ensureAuthenticated, (req, res, next) => {
   let user = false;
   if (req.session.token) { user = true; }
-  res.render('blah', { user });
+  const options = {
+    method: 'GET',
+    uri: 'http://locations-service:3001/locations/user',
+    json: true,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${req.session.token}`,
+    },
+  };
+  return request(options)
+  .then((response) => {
+    res.render('user.html', { user, locations: response.data });
+  })
+  .catch((err) => { next(err); });
 });
 
 module.exports = router;

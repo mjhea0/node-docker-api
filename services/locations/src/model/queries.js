@@ -4,6 +4,10 @@ function getAllLocations() {
   return knex('locations').select();
 }
 
+function getAllLocationsByUser(userId) {
+  return knex('locations').select().where('user_id', userId);
+}
+
 function getSingleLocation(jobId) {
   return knex('locations').select().where('id', jobId);
 }
@@ -22,6 +26,7 @@ function removeLocation(jobId) {
 
 module.exports = {
   getAllLocations,
+  getAllLocationsByUser,
   getSingleLocation,
   addLocation,
   updateLocation,
