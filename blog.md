@@ -1,6 +1,8 @@
 # Developing and Testing Microservices with Docker
 
-**In this article we'll look at how to configure and test a number of small, independent services locally with [Docker](https://docs.docker.com/) and [Docker Compose](https://docs.docker.com/compose/).**
+Often, when developing applications with a microservice architecture, you cannot fully test out all services until you deploy to a staging server. This takes much too long to get feedback. Docker helps to speed up this process by making it easier to link together small, independent services.
+
+**In this article we'll look at how to configure and test a number of services locally with [Docker](https://docs.docker.com/) and [Docker Compose](https://docs.docker.com/compose/). We'll also look at workflow and how to interact with and debug containers.**
 
 This post assumes prior knowledge of the following topics. Refer to the resources for more info:
 

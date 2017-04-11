@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/mjhea0/node-docker-api.svg?branch=master)](https://travis-ci.org/mjhea0/node-docker-api)
 
-Node + Express API + Docker
-
 ### Setup
 
 1. Fork/Clone this repo
@@ -19,6 +17,8 @@ Node + Express API + Docker
 
 ## Build and Run the App
 
+### Fire up the Containers
+
 Build the images:
 
 ```sh
@@ -31,15 +31,63 @@ Run the containers:
 $ docker-compose up -d
 ```
 
-Your app should be listening on running on port 3000 with the following routes:
+### Migrate and Seed
 
-| Endpoint         | HTTP Method  | CRUD Method | Result               |
-|------------------|--------------|-------------|----------------------|
-| /api/v1/jobs/    | GET          | CREATE      | get all jobs         |
-| /api/v1/jobs/:id | GET          | CREATE      | get a single job     |
-| /api/v1/jobs/    | POST         | READ        | add a single job     |
-| /api/v1/jobs/:id | PUT          | UPDATE      | update a single job  |
-| /api/v1/jobs/:id | DELETE       | DELETE      | delete a single job  |
+With the apps up, run:
+
+```sh
+$ sh migrate.sh
+```
+
+### Sanity Check
+
+Test out the following services...
+
+#### (1) Users - http://localhost:3000
+
+| Endpoint        | HTTP Method | CRUD Method | Result        |
+|-----------------|-------------|-------------|---------------|
+| /users/register | POST        | CREATE      | add a user    |
+| /users/login    | POST        | CREATE      | log in a user |
+| /users/user     | GET         | READ        | get user info |
+
+#### (2) Locations - http://localhost:3001
+
+| Endpoint         | HTTP Method | CRUD Method | Result                    |
+|------------------|-------------|-------------|---------------------------|
+| /locations       | GET         | READ        | get all locations         |
+| /locations/user  | GET         | READ        | get all locations by user |
+| /locations/:id   | GET         | READ        | get a single job          |
+| /locations       | POST        | CREATE      | add a single job          |
+| /locations/:id   | PUT         | UPDATE      | update a single job       |
+| /locations/:id   | DELETE      | DELETE      | delete a single job       |
+
+#### (3) Web - http://localhost:3003
+
+| Endpoint  | HTTP Method | CRUD Method | Result               |
+|-----------|-------------|-------------|----------------------|
+| /         | GET         | READ        | render main page     |
+| /login    | GET         | READ        | render login page    |
+| /login    | POST        | CREATE      | log in a user        |
+| /register | GET         | READ        | render register page |
+| /register | POST        | CREATE      | register a new user  |
+| /logout   | GET         | READ        | log a user out       |
+| /add      | POST        | CREATE      | add a new location   |
+| /user     | GET         | READ        | get user info        |
+
+#### (4) Postgres - http://localhost:5432
+
+Add steps for accessing...
+
+#### (5) Functional Tests
+
+With the app running, run:
+
+```sh
+$ docker-compose -f docker-compose-test.yml -d
+```
+
+### Commands
 
 To stop the containers:
 
@@ -63,23 +111,4 @@ Remove images:
 
 ```sh
 $ docker rmi $(docker images -q)
-```
-
-### Migrate and Seed
-
-With the app running, run:
-
-```sh
-$ docker-compose run users-service knex migrate:latest --env development --knexfile app/knexfile.js
-$ docker-compose run users-service knex seed:run --env development --knexfile app/knexfile.js
-$ docker-compose run locations-service knex migrate:latest --env development --knexfile app/knexfile.js
-$ docker-compose run locations-service knex seed:run --env development --knexfile app/knexfile.js
-```
-
-### Test
-
-With the app running, run:
-
-```sh
-$ docker-compose run server npm test
 ```
