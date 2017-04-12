@@ -10,8 +10,7 @@ This post assumes prior knowledge of the following topics. Refer to the resource
 |------------------|----------|
 | Docker           | [Get started with Docker](https://docs.docker.com/engine/getstarted/) |
 | Docker Compose   | [Get started with Docker Compose](https://docs.docker.com/compose/gettingstarted/) |
-| Node/Express API | [Testing Node and Express](http://mherman.org/blog/2016/09/12/testing-node-and-express) |
-| TestCafe         | [Functional Testing With TestCafe](http://mherman.org/blog/2017/03/19/functional-testing-with-testcafe) |  
+| Node/Express API | [Testing Node and Express](http://mherman.org/blog/2016/09/12/testing-node-and-express) | 
 
 ## Contents
 
@@ -43,7 +42,8 @@ By the end of this tutorial, you should be able to...
 Start by cloning the base project:
 
 ```sh
-$ git clone
+$ git clone https://github.com/mjhea0/node-docker-api.git
+$ git checkout sans-docker
 ```
 
 Take a quick look at the structure:
@@ -137,6 +137,8 @@ Add a *docker-compose.yml* file to the project root, which is used to link multi
 ```
 version: '2.1'
 ```
+
+2.1? https://docs.docker.com/compose/compose-file/compose-file-v2/#version-21
 
 Then add a *.dockerignore* to the "services/locations", "services/users", "tests", and "web" directories:
 
