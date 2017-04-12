@@ -36,6 +36,7 @@ By the end of this tutorial, you should be able to...
 1. Run unit and integration tests inside a Docker container
 1. Set up a separate container for functional tests
 1. Debug a running Docker container
+1. Utilize [links](https://docs.docker.com/compose/compose-file/#links) for inter-container communication (AJAX)
 
 ## Project Setup
 
@@ -451,7 +452,7 @@ $ docker-compose -f docker-compose-test.yml run tests npm test
 
 ## Next Steps
 
-What's next? 
+What's next?
 
 1. Microservices: What is a microservice? Does the DB from one service need to be separate from another service? Notice how the migrations and seeds are set up in the `users` and `locations` services. This is a problem. The developers working on one service should not have to care about seeds and migration files for a different service. How do you refactor this?
 1. Dependency management: Right now we're installing many of the same dependencies over and over again, in multiple containers. How can we manage this better? How about a data-only container that just houses dependencies?
