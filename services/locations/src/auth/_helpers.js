@@ -20,7 +20,7 @@ function ensureAuthenticated(req, res, next) {
   // decode the token
   const header = req.headers.authorization.split(' ');
   const token = header[1];
-  decodeToken(token, (err, payload) => {
+  return decodeToken(token, (err, payload) => {
     if (err) {
       return res.status(401).json({
         status: 'Token has expired',

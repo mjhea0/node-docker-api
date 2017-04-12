@@ -14,10 +14,10 @@ describe('GET /', () => {
     return request(options)
     .then((res) => {
       const $ = cheerio.load(res);
-      var footerText = $('footer p').html();
       $('h1').html().should.eql('Login');
     })
     .catch((err) => {
+      console.log(err);
       should.not.exist(err);
     });
   });

@@ -102,7 +102,7 @@ router.post('/add', helpers.ensureAuthenticated, (req, res, next) => {
     },
   };
   return request(options)
-  .then((response) => {
+  .then(() => {
     res.redirect('/');
   })
   .catch((err) => { next(err); });

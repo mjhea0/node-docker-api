@@ -22,7 +22,7 @@ describe('Locations API Routes', () => {
     return knex.migrate.rollback();
   });
 
-  describe.only('GET /locations', () => {
+  describe('GET /locations', () => {
     it('should return all locations', () => {
       const payload = {
         username: 'jeremy',
@@ -117,7 +117,7 @@ describe('Locations API Routes', () => {
     });
   });
   describe('POST /', () => {
-    it('should create a new location', () => {
+    xit('should create a new location', () => {
       const payload = {
         username: 'jeremy',
         password: 'johnson123'
@@ -207,7 +207,7 @@ describe('Locations API Routes', () => {
     });
   });
   describe('PUT /:id', () => {
-    it('should update a location', () => {
+    xit('should update a location', () => {
       const payload = {
         username: 'jeremy',
         password: 'johnson123'

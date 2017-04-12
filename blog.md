@@ -23,7 +23,8 @@ This post assumes prior knowledge of the following topics. Refer to the resource
 1. Locations Service Setup
 1. Web Setup
 1. Workflow
-1. Tests Setup
+1. Testing
+1. Test Setup
 1. Next Steps
 
 ## Objectives
@@ -32,6 +33,9 @@ By the end of this tutorial, you should be able to...
 
 1. Configure and run a set of microservices locally with Docker and Docker Compose
 1. Utilize [volumes](https://docs.docker.com/engine/tutorials/dockervolumes/) to mount your code into a container
+1. Run unit and integration tests inside a Docker container
+1. Set up a separate container for functional tests
+1. Debug a running Docker container
 
 ## Project Setup
 
@@ -365,12 +369,92 @@ $ docker-compose up -d web
 
 Test: http://localhost:3003
 
-Why 500 error?
-AJAX request?
-Workflow?
+Take a look at the AJAX request happening in the GET `/` route in *web/src/routes/index.js*. What do you notice about the URL?
+
+## Testing
+
+Did you notice the unit and integration tests in the "services/users/tests" and "services/locations/tests" folders? To run the tests properly, we need to use a different *docker-compose.yml* file since the environment variable for the `NODE_ENV` is set as `development`.
+
+Duplicate the file, saving it as *docker-compose-test.yml* and updated the `NODE_ENV` variable to `test` so the proper database is used - `node_docker_api_test`.
+
+Apply the environment variables to the running containers:
+
+```sh
+$ docker-compose -f docker-compose-test.yml up -d
+```
+
+Then run the tests:
+
+```sh
+$ docker-compose -f docker-compose-test.yml run users-service npm test
+$ docker-compose -f docker-compose-test.yml run locations-service npm test
+```
+## Workflow
+
+Examples:
+
+1. livereload
+1. `console.log` for debugging
+1. Accessing logs
+
+## Test Setup
+
+Finally, to set up the last service, add the *Dockerfile* to the "tests" folder:
+
+```
+FROM node:latest
+
+# set working directory
+RUN mkdir /src
+WORKDIR /src
+
+# install app dependencies
+ENV PATH /src/node_modules/.bin:$PATH
+ADD package.json /src/package.json
+RUN npm install
+```
+
+Then update the *docker-compose-test.yml* file:
+
+```
+tests:
+  container_name: tests
+  build: ./tests/
+  volumes:
+    - './tests:/src/app'
+    - './tests/package.json:/src/package.json'
+  depends_on:
+    postgres:
+      condition: service_healthy
+    users-service:
+      condition: service_started
+    locations-service:
+      condition: service_started
+  links:
+    - postgres
+    - users-service
+    - locations-service
+    - web
+```
+
+Fire up the containers:
+
+```sh
+$ docker-compose -f docker-compose-test.yml up -d tests
+```
+
+Run:
+
+```sh
+$ docker-compose -f docker-compose-test.yml run tests npm test
+```
 
 ## Next Steps
 
-1. Dependency management: Right now we're installing many of the same dependencies over and over again. How can we manage this better? How about a data-only container that just houses dependencies?
-1. Service discovery: Consul
-1. Deployment prep: Docker Machine and nginx for load balancing
+What's next? 
+
+1. Microservices: What is a microservice? Does the DB from one service need to be separate from another service? Notice how the migrations and seeds are set up in the `users` and `locations` services. This is a problem. The developers working on one service should not have to care about seeds and migration files for a different service. How do you refactor this?
+1. Dependency management: Right now we're installing many of the same dependencies over and over again, in multiple containers. How can we manage this better? How about a data-only container that just houses dependencies?
+1. Deployment prep: Set up Docker Machine and nginx for load balancing, Consul for service discover, update environment variables for the base URL since these will be different in production
+1. Error handling: Right now errors are being thrown, but there really isn't much info as to why, which makes debugging difficult. Be a good citizen and handle your errors properly since you may not always have access to the code base from a different service.
+1. DRY: The code could be refactored in places, especially the tests.
