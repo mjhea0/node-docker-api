@@ -10,7 +10,7 @@ This post assumes prior knowledge of the following topics. Refer to the resource
 |------------------|----------|
 | Docker           | [Get started with Docker](https://docs.docker.com/engine/getstarted/) |
 | Docker Compose   | [Get started with Docker Compose](https://docs.docker.com/compose/gettingstarted/) |
-| Node/Express API | [Testing Node and Express](http://mherman.org/blog/2016/09/12/testing-node-and-express) | 
+| Node/Express API | [Testing Node and Express](http://mherman.org/blog/2016/09/12/testing-node-and-express) |
 
 ## Contents
 
@@ -458,6 +458,6 @@ What's next?
 
 1. Microservices: What is a microservice? Does the DB from one service need to be separate from another service? Notice how the migrations and seeds are set up in the `users` and `locations` services. This is a problem. The developers working on one service should not have to care about seeds and migration files for a different service. How do you refactor this?
 1. Dependency management: Right now we're installing many of the same dependencies over and over again, in multiple containers. How can we manage this better? How about a data-only container that just houses dependencies?
-1. Deployment prep: Set up Docker Machine and nginx for load balancing, Consul for service discover, update environment variables for the base URL since these will be different in production
+1. Deployment prep: Set up Docker Machine and nginx for load balancing, Consul for service discover, update environment variables for the base URL since these will be different in production, add a data-only container for piping logs to
 1. Error handling: Right now errors are being thrown, but there really isn't much info as to why, which makes debugging difficult. Be a good citizen and handle your errors properly since you may not always have access to the code base from a different service.
 1. DRY: The code could be refactored in places, especially the tests.
