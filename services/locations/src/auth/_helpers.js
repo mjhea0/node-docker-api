@@ -1,6 +1,6 @@
 const moment = require('moment');
 const jwt = require('jwt-simple');
-const knex = require('../model/connection');
+const knex = require('../db/connection');
 
 function decodeToken(token, callback) {
   const payload = jwt.decode(token, process.env.TOKEN_SECRET);

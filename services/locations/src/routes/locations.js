@@ -1,9 +1,13 @@
 const express = require('express');
-const queries = require('../model/queries.js');
+const queries = require('../db/queries.js');
 const authHelpers = require('../auth/_helpers');
 const routeHelpers = require('./_helpers');
 
 const router = express.Router();
+
+router.get('/ping', (req, res) => {
+  res.send('pong');
+});
 
 /*
 get all locations

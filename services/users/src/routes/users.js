@@ -4,6 +4,10 @@ const authHelpers = require('../auth/_helpers');
 
 const router = express.Router();
 
+router.get('/ping', (req, res) => {
+  res.send('pong');
+});
+
 router.post('/register', (req, res) => {
   return authHelpers.createUser(req, res)
   .then((user) => { return localAuth.encodeToken(user[0]); })

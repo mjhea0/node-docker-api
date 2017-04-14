@@ -6,7 +6,7 @@ const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
 const server = require('../../src/app');
-const knex = require('../../src/model/connection');
+const knex = require('../../src/db/connection');
 
 describe('routes : users', () => {
 
