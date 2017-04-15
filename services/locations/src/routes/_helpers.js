@@ -15,6 +15,25 @@ function getWeather(locationsArray) {
   return Promise.all(data);
 }
 
+function ensureAuthenticated(req, res, next) {
+  if (!(req.headers && req.headers.authorization)) {
+    return res.status(400).json({ status: 'Please log in', });
+  }
+  const options = {
+    method: 'POST',
+    uri: 'http://users-service:3000/users/user',
+    json: true,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${req.headers.authorization.split(' ')[1]}`,
+    },
+  };
+  return request(options)
+  .then((res) => { return next(); })
+  .catch((err) => { return next(err); });
+}
+
 module.exports = {
   getWeather,
+  ensureAuthenticated,
 };

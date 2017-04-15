@@ -302,11 +302,16 @@ Test:
 | /locations/:id   | PUT         | UPDATE      | update a single job       |
 | /locations/:id   | DELETE      | DELETE      | delete a single job       |
 
-UPDATE AUTH ROUTE
+HERE
+
+```sh
+$ http POST http://localhost:3000/users/register username=michael password=herman
+$ http POST http://localhost:3000/users/login username=michael password=herman
+```
 
 ## Web Services Setup
 
-Moving on...
+Moving on right along...
 
 1. Add the *Dockerfile*
 1. Add the service to *docker-compose*:
@@ -324,8 +329,6 @@ Moving on...
         - NODE_ENV=development
         - SECRET_KEY=changeme
       depends_on:
-        postgres:
-          condition: service_healthy
         users-service:
           condition: service_started
         locations-service:
