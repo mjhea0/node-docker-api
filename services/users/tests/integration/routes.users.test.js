@@ -108,7 +108,9 @@ describe('routes : users', () => {
           should.not.exist(err);
           res.status.should.eql(200);
           res.type.should.eql('application/json');
+          res.body.should.include.keys('status', 'user');
           res.body.status.should.eql('success');
+          should.exist(res.body.user);
           done();
         });
       });

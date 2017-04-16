@@ -52,6 +52,7 @@ router.post('/login', (req, res) => {
 router.get('/user', authHelpers.ensureAuthenticated, (req, res) => {
   res.status(200).json({
     status: 'success',
+    user: req.user
   });
 });
 

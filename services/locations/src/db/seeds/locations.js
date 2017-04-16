@@ -1,5 +1,3 @@
-const bcrypt = require('bcryptjs');
-
 exports.seed = (knex, Promise) => {
   return knex('locations').del()
   .then(() => {
@@ -10,5 +8,6 @@ exports.seed = (knex, Promise) => {
         long: -105.270546,
       })  // eslint-disable-line
     );
-  });
+  })
+  .catch((err) => { console.log(err); });
 };

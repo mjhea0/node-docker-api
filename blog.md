@@ -74,7 +74,7 @@ Kill the servers once done.
 
 ## Docker Config
 
-Add a *docker-compose.yml* file to the project root, which is config files used by the Docker Compose to link multiple services together:
+Add a *docker-compose.yml* file to the project root, which is a config file used by Docker Compose to link multiple services together:
 
 ```
 version: '2.1'
@@ -181,7 +181,8 @@ users-service:
     - '3000:3000'
   environment:
     - DATABASE_URL=postgres://admin:admin@users-db:5432/node_docker_api_users_dev
-    - NODE_ENV=development
+    - DATABASE_TEST_URL=postgres://admin:admin@users-db:5432/node_docker_api_users_test
+    - NODE_ENV=${NODE_ENV}
     - TOKEN_SECRET=changeme
   depends_on:
     users-db:
@@ -196,17 +197,31 @@ What's new here?
 1. `depends_on`: [depends_on](https://docs.docker.com/compose/compose-file/#dependson) is used to start services in a specific order. So, the `users-service` will wait for the `users-db` to be up before starting.
 1. `links`: With [links](https://docs.docker.com/compose/compose-file/#links), code inside the `users-service` can access the database via `users-db:5432`.
 
+Set the `NODE_ENV` environment variable:
+
+```sh
+$ export NODE_ENV=development
+```
+
 Spin up the container:
 
 ```sh
 $ docker-compose up --build -d users-service
 ```
 
-Once up, run the Knex migrations and add the seed:
+Once up, create a new file in the project root called *migrate.sh* and add the Knex migrate and seed commands:
 
 ```sh
-$ docker-compose run users-service knex migrate:latest --env development --knexfile app/knexfile.js
-$ docker-compose run users-service knex seed:run --env development --knexfile app/knexfile.js
+#!/bin/sh
+
+docker-compose run users-service knex migrate:latest --env development --knexfile app/knexfile.js
+docker-compose run users-service knex seed:run --env development --knexfile app/knexfile.js
+```
+
+Then run it:
+
+```sh
+$ sh migrate.sh
 ```
 
 Test:
@@ -247,7 +262,7 @@ CMD ["npm", "start"]
 
 Add the service to *docker-compose*:
 
-```sh
+```
 locations-service:
   container_name: locations-service
   build: ./services/locations/
@@ -257,8 +272,9 @@ locations-service:
   ports:
     - '3001:3001'
   environment:
-    - DATABASE_URL=postgres://admin:admin@locations-db:5432/node_docker_api_locations_dev
-    - NODE_ENV=development
+    - DATABASE_URL=postgres://admin:admin@locations-db:5432/node_docker_api_locations_dev     
+    - DATABASE_TEST_URL=postgres://admin:admin@locations-db:5432/node_docker_api_locations_test
+    - NODE_ENV=${NODE_ENV}
     - TOKEN_SECRET=changeme
     - OPENWEATHERMAP_API_KEY=${OPENWEATHERMAP_API_KEY}
   depends_on:
@@ -280,14 +296,14 @@ $ export OPENWEATHERMAP_API_KEY=YOUR_KEY_HERE
 Spin up the container:
 
 ```sh
-$ docker-compose up --build -d
+$ docker-compose up --build -d locations-service
 ```
 
-Run the migrations and add the seed:
+Add the migrate and seed commands to *migrate.sh*:
 
 ```sh
-$ docker-compose run locations-service knex migrate:latest --env development --knexfile app/knexfile.js
-$ docker-compose run locations-service knex seed:run --env development --knexfile app/knexfile.js
+docker-compose run locations-service knex migrate:latest --env development --knexfile app/knexfile.js
+docker-compose run locations-service knex seed:run --env development --knexfile app/knexfile.js
 ```
 
 Test:
@@ -302,63 +318,82 @@ Test:
 | /locations/:id   | PUT         | UPDATE      | update a single job       |
 | /locations/:id   | DELETE      | DELETE      | delete a single job       |
 
-HERE
-
 ```sh
-$ http POST http://localhost:3000/users/register username=michael password=herman
-$ http POST http://localhost:3000/users/login username=michael password=herman
+$ http GET http://localhost:3001/locations/ping
 ```
 
 ## Web Services Setup
 
-Moving on right along...
+Moving right along...
 
-1. Add the *Dockerfile*
-1. Add the service to *docker-compose*:
+Add the *Dockerfile*:
 
-    ```
-    web:
-      container_name: web
-      build: ./web/
-      volumes:
-        - './web:/src/app'
-        - './web/package.json:/src/package.json'
-      ports:
-        - '3003:3003'
-      environment:
-        - NODE_ENV=development
-        - SECRET_KEY=changeme
-      depends_on:
-        users-service:
-          condition: service_started
-        locations-service:
-          condition: service_started
-      links:
-        - postgres
-        - users-service
-        - locations-service
-    ```
+```
+FROM node:latest
+
+# set working directory
+RUN mkdir /src
+WORKDIR /src
+
+# install app dependencies
+ENV PATH /src/node_modules/.bin:$PATH
+ADD package.json /src/package.json
+RUN npm install
+
+# start app
+CMD ["npm", "start"]
+```
+
+Add the service to *docker-compose*:
+
+```
+web:
+  container_name: web
+  build: ./web/
+  volumes:
+    - './web:/src/app'
+    - './web/package.json:/src/package.json'
+  ports:
+    - '3003:3003'
+  environment:
+    - NODE_ENV=${NODE_ENV}
+    - SECRET_KEY=changeme
+  depends_on:
+    users-service:
+      condition: service_started
+    locations-service:
+      condition: service_started
+  links:
+    - users-service
+    - locations-service
+```
 
 Spin up the container:
 
 ```sh
-$ docker-compose up -d web
+$ docker-compose up --build -d web
 ```
 
-Test: http://localhost:3003
+Navigate to [http://localhost:3003](http://localhost:3003) in your browser and you should see the login page. Register a new user. Once redirected, you should see:
 
-Take a look at the AJAX request happening in the GET `/` route in *web/src/routes/index.js*. What do you notice about the URL?
+ADD IMAGE
+
+Take a look at the AJAX request in the GET `/` route in *web/src/routes/index.js*. Why does the `uri` point to `locations-service` and not `localhost`?
+
+ADD EXPLANATION
 
 ## Testing
 
-Did you notice the unit and integration tests in the "services/users/tests" and "services/locations/tests" folders? To run the tests properly, we need to use a different *docker-compose.yml* file since the environment variable for the `NODE_ENV` is set as `development`.
-
-Duplicate the file, saving it as *docker-compose-test.yml* and updated the `NODE_ENV` variable to `test` so the proper database is used - `node_docker_api_test`.
-
-Apply the environment variables to the running containers:
+Did you notice the unit and integration tests in the "services/users/tests" and "services/locations/tests" folders? Well, to run the tests properly, we need to update the `NODE_ENV` environment variable, since it is configured for the development environment.
 
 ```sh
-$ docker-compose -f docker-compose-test.yml up -d
+$ export NODE_ENV=test
+```
+
+Update the containers:
+
+```sh
+$ docker-compose up -d
 ```
 
 Then run the tests:
@@ -367,13 +402,24 @@ Then run the tests:
 $ docker-compose -f docker-compose-test.yml run users-service npm test
 $ docker-compose -f docker-compose-test.yml run locations-service npm test
 ```
+
+Ready to develop again?
+
+1. Update the env variable - `export NODE_ENV=development`
+1. Update the containers - `docker-compose up -d`
+
 ## Workflow
+
+Let's quickly look at how to work with code inside the containers...
+
+HERE
 
 Examples:
 
 1. livereload
 1. `console.log` for debugging
 1. Accessing logs
+1. dev to test
 
 ## Test Setup
 
@@ -392,7 +438,7 @@ ADD package.json /src/package.json
 RUN npm install
 ```
 
-Then update the *docker-compose-test.yml* file:
+Then update the *docker-compose.yml* file:
 
 ```
 tests:
@@ -402,28 +448,26 @@ tests:
     - './tests:/src/app'
     - './tests/package.json:/src/package.json'
   depends_on:
-    postgres:
-      condition: service_healthy
     users-service:
       condition: service_started
     locations-service:
       condition: service_started
   links:
-    - postgres
     - users-service
     - locations-service
     - web
 ```
 
-Fire up the containers:
+Fire up the container:
 
 ```sh
-$ docker-compose -f docker-compose-test.yml up -d tests
+$ docker-compose up --build -d tests
 ```
 
-Run:
+Update the environment variables, and then run the tests:
 
 ```sh
+$ export NODE_ENV=test
 $ docker-compose -f docker-compose-test.yml run tests npm test
 ```
 

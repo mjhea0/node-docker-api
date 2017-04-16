@@ -20,7 +20,7 @@ function ensureAuthenticated(req, res, next) {
     return res.status(400).json({ status: 'Please log in', });
   }
   const options = {
-    method: 'POST',
+    method: 'GET',
     uri: 'http://users-service:3000/users/user',
     json: true,
     headers: {
@@ -29,7 +29,9 @@ function ensureAuthenticated(req, res, next) {
     },
   };
   return request(options)
-  .then((res) => { return next(); })
+  .then((response) => {
+    req.user = response.user;
+    return next(); })
   .catch((err) => { return next(err); });
 }
 

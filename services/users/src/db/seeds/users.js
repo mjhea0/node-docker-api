@@ -11,5 +11,6 @@ exports.seed = (knex, Promise) => {
         password: hash,
       })  // eslint-disable-line
     );
-  });
+  })
+  .catch((err) => { console.log(err); });
 };

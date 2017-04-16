@@ -13,7 +13,7 @@ module.exports = {
   },
   test: {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
+    connection: process.env.DATABASE_TEST_URL,
     migrations: {
       directory: path.join(__dirname, 'src', 'db', 'migrations')
     },
