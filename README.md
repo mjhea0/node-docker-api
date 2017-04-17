@@ -4,7 +4,7 @@
 
 ## Want to learn how to build this project?
 
-Check out the [blog post]().
+Check out the [blog post](ADD URL).
 
 ## Want to use this project?
 
