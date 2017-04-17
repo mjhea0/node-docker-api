@@ -17,7 +17,7 @@ services:
     container_name: locations-db
     build: ./services/locations/src/db
     ports:
-      - '5432:5432'
+      - '5434:5432'
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
