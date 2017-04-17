@@ -5,6 +5,8 @@ services:
   users-db:
     container_name: users-db
     build: ./services/users/src/db
+    ports:
+      -"5433:5432"
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
@@ -12,6 +14,8 @@ services:
   locations-db:
     container_name: locations-db
     build: ./services/locations/src/db
+    ports:
+      -"5434:5432"
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
