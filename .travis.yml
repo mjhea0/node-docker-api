@@ -14,9 +14,14 @@ before_install:
 
 before_script:
   - docker-compose up --build -d
+  - docker-compose run users-service knex migrate:latest --env development --knexfile app/knexfile.js
+  - docker-compose run users-service knex seed:run --env development --knexfile app/knexfile.js
+  - docker-compose run locations-service knex migrate:latest --env development --knexfile app/knexfile.js
+  - docker-compose run locations-service knex seed:run --env development --knexfile app/knexfile.js
 
 script:
-  - docker-compose run web npm test
+  - docker-compose run users-service npm test
+  - docker-compose run locations-service npm test
 
 after_script:
   - docker-compose down

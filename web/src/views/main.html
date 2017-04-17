@@ -1,0 +1,65 @@
+{% extends "_base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+
+  <div class="row">
+    <div class="col-md-8">
+      <h1>Locations</h1>
+      <hr>
+      <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal">Add New Location</button>
+      <br><br><br>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>User ID</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Temp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for location in locations %}
+          <tr>
+            <td>{{location.id}}</td>
+            <td>{{location.user_id}}</td>
+            <td>{{location.lat}}</td>
+            <td>{{location.long}}</td>
+            <td>{{location.temp}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Add New Location</h4>
+        </div>
+        <div class="modal-body">
+          <form id="add-location-form" action="/add" method="post">
+            <div class="form-group">
+              <label for="latitude">Latitude</label>
+              <input type="text" class="form-control" name="latitude" id="latitude" value="37.774929" required>
+            </div>
+            <div class="form-group">
+              <label for="longitude">Longitude</label>
+              <input type="text" class="form-control" name="longitude" id="longitude" value="-122.419416" required>
+            </div>
+            <div class="form-group">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary" id="add-location">Add</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

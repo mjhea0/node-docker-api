@@ -1,0 +1,2 @@
+CREATE DATABASE node_docker_api_users_dev;
+CREATE DATABASE node_docker_api_users_test;
