@@ -1,0 +1,99 @@
+version: '2.1'
+
+services:
+
+  users-db:
+    container_name: users-db
+    build: ./services/users/src/db
+    ports:
+      - '5433:5432'
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+
+  locations-db:
+    container_name: locations-db
+    build: ./services/locations/src/db
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+
+  users-service:
+    container_name: users-service
+    build: ./services/users/
+    volumes:
+      - './services/users:/src/app'
+      - './services/users/package.json:/src/package.json'
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgres://admin:admin@users-db:5432/node_docker_api_users_dev
+      - DATABASE_TEST_URL=postgres://admin:admin@users-db:5432/node_docker_api_users_test
+      - NODE_ENV=${NODE_ENV}
+      - TOKEN_SECRET=changeme
+    depends_on:
+      users-db:
+        condition: service_started
+    links:
+      - users-db
+
+  locations-service:
+    container_name: locations-service
+    build: ./services/locations/
+    volumes:
+      - './services/locations:/src/app'
+      - './services/locations/package.json:/src/package.json'
+    ports:
+      - '3001:3001'
+    environment:
+      - DATABASE_URL=postgres://admin:admin@locations-db:5432/node_docker_api_locations_dev
+      - DATABASE_TEST_URL=postgres://admin:admin@locations-db:5432/node_docker_api_locations_test
+      - NODE_ENV=${NODE_ENV}
+      - TOKEN_SECRET=changeme
+      - OPENWEATHERMAP_API_KEY=${OPENWEATHERMAP_API_KEY}
+    depends_on:
+      locations-db:
+        condition: service_started
+      users-service:
+        condition: service_started
+    links:
+      - locations-db
+      - users-service
+
+  web:
+    container_name: web
+    build: ./web/
+    volumes:
+      - './web:/src/app'
+      - './web/package.json:/src/package.json'
+    ports:
+      - '3003:3003'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - SECRET_KEY=changeme
+    depends_on:
+      users-service:
+        condition: service_started
+      locations-service:
+        condition: service_started
+    links:
+      - users-service
+      - locations-service
+
+  tests:
+    container_name: tests
+    build: ./tests/
+    volumes:
+      - './tests:/src/app'
+      - './tests/package.json:/src/package.json'
+    depends_on:
+      users-service:
+        condition: service_started
+      locations-service:
+        condition: service_started
+    links:
+      - users-service
+      - locations-service
+      - web
