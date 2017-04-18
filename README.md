@@ -4,7 +4,7 @@
 
 ## Want to learn how to build this project?
 
-Check out the [blog post](ADD URL).
+Check out the [blog post](http://mherman.org/blog/2017/04/18/developing-and-testing-microservices-with-docker).
 
 ## Want to use this project?
 
