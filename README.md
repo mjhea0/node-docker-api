@@ -152,6 +152,6 @@ Run unit and integration tests:
 ```sh
 $ export NODE_ENV=test
 $ docker-compose up -d
-$ docker-compose -f docker-compose-test.yml run users-service npm test
-$ docker-compose -f docker-compose-test.yml run locations-service npm test
+$ docker-compose run users-service npm test
+$ docker-compose run locations-service npm test
 ```
